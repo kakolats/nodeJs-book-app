@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
 
 const bookSchema = new mongoose.Schema({
     title : {
@@ -18,8 +18,21 @@ const bookSchema = new mongoose.Schema({
     author : {
         type: String,
         required: true
+    },
+    slug: {
+        type:String,
+        unique: true
     }
 })
+
+bookSchema.methods.generateSlug = async function(){
+    this.slug = this.title.toLowercase().replace(/\s+/g, '-')+uuidv4();
+}
+
+bookSchema.statics.findBookBySlug = async(slug) => {
+    const book = await Book.findOne({slug});
+    return book;
+}
 
 const Book = mongoose.model("Book",bookSchema);
 
