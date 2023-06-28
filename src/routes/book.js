@@ -20,6 +20,7 @@ router.get('/books/:slug',async(req,res) =>{
     try {
         const book = await Book.findBookBySlug(slug);
         if(!book) return res.status(404).send('Book not found !');
+        return res.status(201).send(book);
     } catch (error) {
         res.status(500).send();
     }
@@ -40,7 +41,7 @@ router.patch('/books/:slug', async(req,res) =>{
     const updatedInfo = Object.keys(req.body);
     const slug = req.params.slug;
     try {
-        const book = Book.findBookBySlug(slug);
+        const book = await Book.findBookBySlug(slug);
         if(!book) return res.status(404).send('Book not found !');
         updatedInfo.forEach(update => book[update] = req.body[update]);
         await book.save();
@@ -54,10 +55,12 @@ router.patch('/books/:slug', async(req,res) =>{
 router.delete('/books/:slug', async(req,res) =>{
     const slug = req.params.slug;
     try {
-        const book = Book.findBookBySlug(slug);
+        const book = await Book.findBookBySlug(slug);
+        //console.log(book);
         if(!book) return res.status(404).send('Book not found !');
-        await book.remove();
-        res.status(201).send('Book deleted with success');
+        const remove = await book.deleteOne();
+        console.log(remove);
+        res.send(book);
     } catch (error) {
         res.status(500).send(error);
     }

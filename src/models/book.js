@@ -26,7 +26,7 @@ const bookSchema = new mongoose.Schema({
 })
 
 bookSchema.methods.generateSlug = async function(){
-    this.slug = this.title.toLowercase().replace(/\s+/g, '-')+uuidv4();
+    this.slug = this.title.toLowerCase().replace(/\s+/g, '-')+uuidv4();
 }
 
 bookSchema.statics.findBookBySlug = async(slug) => {
