@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
+const { uuid } = require('uuidv4');
 
 const bookSchema = new mongoose.Schema({
     title : {
@@ -22,15 +21,19 @@ const bookSchema = new mongoose.Schema({
     slug: {
         type:String,
         unique: true
-    }
+    },
+    comments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment"
+    }]
 })
 
 bookSchema.methods.generateSlug = async function(){
-    this.slug = this.title.toLowerCase().replace(/\s+/g, '-')+uuidv4();
+    this.slug = this.title.toLowerCase().replace(/\s+/g, '-')+uuid();
 }
 
 bookSchema.statics.findBookBySlug = async(slug) => {
-    const book = await Book.findOne({slug});
+    const book = await Book.findOne({slug}).populate("comments");
     return book;
 }
 
